@@ -21,7 +21,7 @@
 classdef Session < handle
     
     properties (Constant)
-        SAMPLING_RATE = 250; %Sampling Rate of the sessions
+%         SAMPLING_RATE = 250; %Sampling Rate of the sessions
         THRESHOLD_SPLIT_MILLIS = 2000; %Threshold for splitting the trials based on DIN data
     end
     properties (Access = public)
@@ -33,6 +33,7 @@ classdef Session < handle
     
     properties (Access = private)
         rest; % Experimental
+        SAMPLING_RATE = 250;
     end
     
     methods (Access = public)
@@ -114,7 +115,19 @@ classdef Session < handle
             
             S.subjectids = [];
         end
-       
+        function S = loadBCI1Dataset(S)
+            S.SAMPLING_RATE = 128;
+            load dataset_BCIcomp1;
+            numTrials = length(S.trials) +1;
+            for i=1:140;
+                signal = x_train(:,:,i);
+                label = y_train(i,1);
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,S.SAMPLING_RATE,1);
+                numTrials = numTrials+1;
+            end
+            clear Copyright x_test x_train y_train;
+            
+        end
         function S = loadSubjectSession(S,subject,session)
             %loads all trials for a specific session
             %
